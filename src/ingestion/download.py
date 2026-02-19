@@ -1,26 +1,8 @@
-import os
-import yaml
-import boto3
 import pandas as pd
 from pathlib import Path
-from dotenv import load_dotenv
 from roboflow import Roboflow
-
-# Configuración
-load_dotenv()
-ROBOFLOW_API_KEY = os.getenv("ROBOFLOW_API_KEY")
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-
-with open("configs/config.yaml", "r") as f:
-    config = yaml.safe_load(f)
-
-s3_client = boto3.client(
-    "s3",
-    region_name=config["aws"]["region"],
-    aws_access_key_id=AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-)
+from src.utils.config import config, ROBOFLOW_API_KEY
+from src.utils.s3 import upload_to_s3, count_s3_objects
 
 
 def download_dataset():
@@ -39,30 +21,19 @@ def download_dataset():
     print("Dataset descargado.")
 
 
-def upload_to_s3():
-    """Sube el dataset a S3 si no está subido."""
+def upload_raw_to_s3():
+    """Sube el dataset raw a S3 si no está subido."""
     bucket = config["aws"]["bucket"]
     prefix = config["aws"]["raw_prefix"]
 
-    # Verifica si ya hay archivos en S3
-    paginator = s3_client.get_paginator("list_objects_v2")
-    count = 0
-    for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
-        count += page.get("KeyCount", 0)
-
+    count = count_s3_objects(bucket, prefix)
     if count > 0:
-        print(f"S3 ya tiene {count} archivos. Saltando subida.")
+        print(f"S3 ya tiene {count} archivos en {prefix}. Saltando subida.")
         return
 
     print("Subiendo dataset a S3...")
-    local_path = Path(config["data"]["raw_dir"])
-    uploaded = 0
-    for file in local_path.rglob("*"):
-        if file.is_file():
-            s3_key = f"{prefix}/{file.relative_to(local_path)}"
-            s3_client.upload_file(str(file), bucket, s3_key)
-            uploaded += 1
-    print(f"Archivos subidos: {uploaded}")
+    total = upload_to_s3(config["data"]["raw_dir"], bucket, prefix)
+    print(f"Archivos subidos: {total}")
 
 
 def generate_metadata():
@@ -105,5 +76,5 @@ def generate_metadata():
 
 if __name__ == "__main__":
     download_dataset()
-    upload_to_s3()
+    upload_raw_to_s3()
     generate_metadata()
