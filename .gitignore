@@ -219,3 +219,6 @@ runs/
 mlruns/
 *.pt
 
+# Modelos
+models/
+
