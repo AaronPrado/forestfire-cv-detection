@@ -27,6 +27,7 @@ training:
   # Nano (yolov8n.pt) descartado por ser demasiado pequeño para objetos difusos sin bordes claros
   # Medium (yolov8m.pt) descartado por ser demasiado grande para "pocas" imágenes, overfittearía
   model: "yolov8s.pt"
+  best_model: "runs/detect/runs/train/smoke-v/weights/best.pt"
   epochs: 150
   batch_size: 16
   imgsz: 640
@@ -35,3 +36,6 @@ training:
 mlflow:
   tracking_uri: "mlruns"
   experiment_name: "wildfire-smoke-detection"
+
+serving:
+  confidence_threshold: 0.25
