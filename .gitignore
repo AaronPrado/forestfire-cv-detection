@@ -213,3 +213,9 @@ __marimo__/
 data/raw/
 data/processed/
 data/metadata.parquet
+
+# YOLO
+runs/
+mlruns/
+*.pt
+

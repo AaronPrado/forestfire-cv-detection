@@ -21,3 +21,17 @@ aws:
   region: "eu-west-1"
   raw_prefix: "data/raw"
   processed_prefix: "data/processed"
+
+training:
+  # Modelo small elegido por su capacidadd sin riesgo de overfitting
+  # Nano (yolov8n.pt) descartado por ser demasiado pequeño para objetos difusos sin bordes claros
+  # Medium (yolov8m.pt) descartado por ser demasiado grande para "pocas" imágenes, overfittearía
+  model: "yolov8s.pt"
+  epochs: 150
+  batch_size: 16
+  imgsz: 640
+  patience: 30
+
+mlflow:
+  tracking_uri: "mlruns"
+  experiment_name: "wildfire-smoke-detection"
