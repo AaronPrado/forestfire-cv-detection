@@ -19,9 +19,15 @@ wildfire-smoke-detection/
 ├── src/
 │   ├── ingestion/
 │   │   └── download.py      # Descarga del dataset, subida a S3, generación de metadatos
-│   ├── processing/           # Validación, redimensionado y augmentation de imágenes
-│   ├── training/             # Entrenamiento YOLOv8 con tracking en MLflow
-│   └── serving/              # API de inferencia con FastAPI
+│   ├── processing/
+│   │   ├── validate.py      # Validación de imágenes y labels
+│   │   ├── resize.py        # Redimensionado de imágenes
+│   │   └── process.py       # Orquestador del pipeline de procesamiento
+│   ├── training/
+│   ├── serving/
+│   └── utils/
+│       ├── config.py        # Carga centralizada de configuración y credenciales
+│       └── s3.py            # Funciones reutilizables de S3
 ├── tests/
 ├── .env.example
 ├── requirements.txt
@@ -75,7 +81,7 @@ AWS_SECRET_ACCESS_KEY=tu_secret_key_de_aws
 ### 5. Ejecutar ingesta de datos
 
 ```bash
-python src/ingestion/download.py
+python -m src.ingestion.download
 ```
 
 Esto hace lo siguiente:
@@ -83,20 +89,32 @@ Esto hace lo siguiente:
 - Lo sube a S3 (si no está subido)
 - Genera un archivo de metadatos en formato Parquet
 
+### 6. Ejecutar procesamiento de datos
+
+```bash
+python -m src.processing.process
+```
+
+Esto hace lo siguiente:
+- Valida que todas las imágenes y labels sean correctos
+- Redimensiona las imágenes a 640x640 px
+- Sube los datos procesados a S3
+
 ## Stack tecnológico
 
-- **Modelo de detección:** YOLOv8 (Ultralytics)
-- **Tracking de experimentos:** MLflow
+- **Modelo de detección:** YOLOv8 (Ultralytics)(TODO)
+- **Tracking de experimentos:** MLflow (TODO)
 - **Almacenamiento de datos:** AWS S3
 - **Procesamiento de imágenes:** OpenCV, Albumentations
-- **API:** FastAPI + Uvicorn
-- **Testing:** pytest
+- **API:** FastAPI + Uvicorn (TODO)
+- **Testing:** pytest (TODO)
+- **Configuración:** PyYAML, python-dotenv
 
 ## Fases del pipeline
 
 | Fase | Descripción | Estado |
 |------|-------------|--------|
 | 1. Ingesta | Descarga del dataset, subida a S3, generación de metadatos | Hecho |
-| 2. Procesamiento | Validación, redimensionado y augmentation de imágenes | Pendiente |
+| 2. Procesamiento | Validación, redimensionado y augmentation de imágenes | Hecho |
 | 3. Entrenamiento | Entrenamiento de YOLOv8 con tracking en MLflow | Pendiente |
 | 4. Serving | API REST para inferencia en tiempo real | Pendiente |
