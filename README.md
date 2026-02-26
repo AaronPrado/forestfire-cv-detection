@@ -6,6 +6,8 @@ Pipeline end-to-end de Computer Vision para detectar humo de incendios forestale
 
 Este proyecto implementa un pipeline MLOps completo: ingesta de datos desde Roboflow, procesamiento de imágenes, entrenamiento del modelo con tracking de experimentos (MLflow) e inferencia en tiempo real mediante una API REST.
 
+Proyecto complementario: [fire-risk-pipeline](https://github.com/AaronPrado/fire-risk-pipeline) — Pipeline de predicción de riesgo de incendios forestales.
+
 ## Estructura del proyecto
 
 ```
