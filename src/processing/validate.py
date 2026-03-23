@@ -1,5 +1,6 @@
-import cv2
 from pathlib import Path
+
+import cv2
 import yaml
 
 
@@ -17,7 +18,7 @@ def validate_image(image_path, label_path):
         return False
 
     # Verificar el formato del label
-    with open(label_path, "r") as f:
+    with open(label_path) as f:
         lines = f.readlines()
 
     for i, line in enumerate(lines):
@@ -64,7 +65,7 @@ def validate_dataset(dataset_path):
                 else:
                     invalid_count += 1
 
-    print(f"\nResultado de validación:")
+    print("\nResultado de validación:")
     print(f"  Válidas: {valid_count}")
     print(f"  Inválidas: {invalid_count}")
     print(f"  Total: {valid_count + invalid_count}")
@@ -73,9 +74,7 @@ def validate_dataset(dataset_path):
 
 
 if __name__ == "__main__":
-    with open("configs/config.yaml", "r") as f:
+    with open("configs/config.yaml") as f:
         config = yaml.safe_load(f)
 
     validate_dataset(config["data"]["raw_dir"])
-
-    

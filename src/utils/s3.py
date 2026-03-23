@@ -1,6 +1,8 @@
-import boto3
 from pathlib import Path
-from src.utils.config import config, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
+
+import boto3
+
+from src.utils.config import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, config
 
 s3_client = boto3.client(
     "s3",

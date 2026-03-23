@@ -1,6 +1,7 @@
-import cv2
 import shutil
 from pathlib import Path
+
+import cv2
 import yaml
 
 
@@ -43,7 +44,9 @@ def resize_dataset(raw_dir, processed_dir, size):
 
 
 if __name__ == "__main__":
-    with open("configs/config.yaml", "r") as f:
+    with open("configs/config.yaml") as f:
         config = yaml.safe_load(f)
 
-    resize_dataset(config["data"]["raw_dir"], config["data"]["processed_dir"], config["data"]["image_size"])
+    resize_dataset(
+        config["data"]["raw_dir"], config["data"]["processed_dir"], config["data"]["image_size"]
+    )
