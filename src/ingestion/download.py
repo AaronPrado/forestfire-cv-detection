@@ -1,8 +1,10 @@
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
 from roboflow import Roboflow
-from src.utils.config import config, ROBOFLOW_API_KEY
-from src.utils.s3 import upload_to_s3, count_s3_objects
+
+from src.utils.config import ROBOFLOW_API_KEY, config
+from src.utils.s3 import count_s3_objects, upload_to_s3
 
 
 def download_dataset():
@@ -15,7 +17,9 @@ def download_dataset():
 
     print("Descargando dataset de Roboflow...")
     rf = Roboflow(api_key=ROBOFLOW_API_KEY)
-    project = rf.workspace(config["data"]["roboflow_workspace"]).project(config["data"]["roboflow_project"])
+    project = rf.workspace(config["data"]["roboflow_workspace"]).project(
+        config["data"]["roboflow_project"]
+    )
     version = project.version(config["data"]["roboflow_version"])
     version.download(model_format=config["data"]["format"], location=str(raw_dir))
     print("Dataset descargado.")
@@ -58,18 +62,20 @@ def generate_metadata():
         for img_file in images_dir.iterdir():
             if img_file.is_file():
                 label_file = local_path / split / "labels" / f"{img_file.stem}.txt"
-                records.append({
-                    "filename": img_file.name,
-                    "split": split,
-                    "s3_image_path": f"s3://{bucket}/{prefix}/{split}/images/{img_file.name}",
-                    "s3_label_path": f"s3://{bucket}/{prefix}/{split}/labels/{img_file.stem}.txt",
-                    "has_label": label_file.exists(),
-                })
+                records.append(
+                    {
+                        "filename": img_file.name,
+                        "split": split,
+                        "s3_image_path": f"s3://{bucket}/{prefix}/{split}/images/{img_file.name}",
+                        "s3_label_path": f"s3://{bucket}/{prefix}/{split}/labels/{img_file.stem}.txt",
+                        "has_label": label_file.exists(),
+                    }
+                )
 
     df = pd.DataFrame(records)
     df.to_parquet(str(metadata_path), index=False)
     print(f"Metadatos generados: {len(df)} imágenes")
-    print(f"\nResumen por split:")
+    print("\nResumen por split:")
     print(df["split"].value_counts())
     print(f"\nImágenes con label: {df['has_label'].sum()}/{len(df)}")
 

@@ -1,5 +1,6 @@
-from ultralytics import YOLO
 import mlflow
+from ultralytics import YOLO
+
 from src.utils.config import config
 
 
@@ -18,7 +19,7 @@ def train():
 
         # Entrenamiento
         results = model.train(
-            data="data/processed/data.yaml",       # YAML del dataset
+            data="data/processed/data.yaml",  # YAML del dataset
             epochs=config["training"]["epochs"],
             batch=config["training"]["batch_size"],
             imgsz=config["training"]["imgsz"],

@@ -1,8 +1,9 @@
 import sys
-from src.utils.config import config
-from src.utils.s3 import upload_to_s3, count_s3_objects
-from src.processing.validate import validate_dataset
+
 from src.processing.resize import resize_dataset
+from src.processing.validate import validate_dataset
+from src.utils.config import config
+from src.utils.s3 import count_s3_objects, upload_to_s3
 
 
 def run_processing():
