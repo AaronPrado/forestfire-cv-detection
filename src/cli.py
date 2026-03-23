@@ -79,5 +79,25 @@ def pipeline():
     run_train()
 
 
+@smoke.command()
+@click.argument("version", type=int)
+@click.argument("stage", type=click.Choice(["Staging", "Production", "Archived"]))
+def promote(version, stage):
+    """Promote a model version to a stage."""
+    import mlflow
+    from mlflow.tracking import MlflowClient
+
+    from src.utils.config import config
+
+    mlflow.set_tracking_uri(config["mlflow"]["tracking_uri"])
+    client = MlflowClient()
+    client.transition_model_version_stage(
+        name="wildfire-smoke-yolov8s",
+        version=version,
+        stage=stage,
+    )
+    click.echo(f"Modelo versión {version} → {stage}")
+
+
 if __name__ == "__main__":
     smoke()

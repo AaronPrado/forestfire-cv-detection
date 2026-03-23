@@ -10,7 +10,7 @@ def train(epochs_override: int | None = None, batch_size_override: int | None = 
 
     model = YOLO(config["training"]["model"])
 
-    with mlflow.start_run(run_name="wildfire-smoke-detection-initial"):
+    with mlflow.start_run(run_name="wildfire-smoke-detection-initial") as run:
         # Registrar parámetros
         mlflow.log_param("model", config["training"]["model"])
         mlflow.log_param("epochs", config["training"]["epochs"])
@@ -39,6 +39,11 @@ def train(epochs_override: int | None = None, batch_size_override: int | None = 
 
         # Guardar el modelo entrenado como artefacto
         mlflow.log_artifact(str(results.save_dir / "weights" / "best.pt"))
+
+        # Model Registry
+        model_uri = f"runs:/{run.info.run_id}/best.pt"
+        mv = mlflow.register_model(model_uri, "wildfire-smoke-yolov8s")
+        print(f"Modelo registrado: versión {mv.version}")
 
 
 if __name__ == "__main__":
