@@ -37,8 +37,8 @@ docker-run:
 		docker run --env-file .env -p 8000:8000 wildfire-api
 
 clean:
-	find . -type d -name __pycache__ -exec rm -rf {} +
-	find . -type d -name .pytest_cache -exec rm -rf {} +
-	find . -type d -name .ruff_cache -exec rm -rf {} +
+		find . -type d -name __pycache__ -exec rm -rf {} +
+		find . -type d -name .pytest_cache -exec rm -rf {} +
+		find . -type d -name .ruff_cache -exec rm -rf {} +
 
 all: format lint test
