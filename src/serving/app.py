@@ -1,6 +1,8 @@
+from pathlib import Path
+
 import cv2
 import numpy as np
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, HTTPException, UploadFile
 from ultralytics import YOLO
 
 from src.utils.config import config
@@ -8,12 +10,26 @@ from src.utils.config import config
 app = FastAPI(title="Wildfire Smoke Detection API")
 model = YOLO(config["training"]["best_model"])
 
+ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png"}
+MAX_SIZE = 10 * 1024 * 1024  # 10MB
+
 
 @app.post("/predict")
 async def predict(file: UploadFile):
     contents = await file.read()
+
+    ext = Path(file.filename).suffix.lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(status_code=400, detail=f"Formato no soportado: {ext}")
+
+    if len(contents) > MAX_SIZE:
+        raise HTTPException(status_code=400, detail="Archivo demasiado grande (máx 10MB)")
+
     np_array = np.frombuffer(contents, np.uint8)
     img = cv2.imdecode(np_array, cv2.IMREAD_COLOR)
+
+    if img is None:
+        raise HTTPException(status_code=400, detail="No se pudo decodificar la imagen")
 
     results = model.predict(img, conf=config["serving"]["confidence_threshold"])
 
@@ -33,3 +49,8 @@ async def predict(file: UploadFile):
         "detections_count": len(detections),
         "detections": detections,
     }
+
+
+@app.get("/health")
+async def health():
+    return {"status": "healthy", "model": config["training"]["best_model"]}

@@ -44,3 +44,27 @@ def test_predict_detection_structure():
         assert "confidence" in detection
         assert "bbox" in detection
         assert len(detection["bbox"]) == 4
+
+
+def test_health_returns_200():
+    response = client.get("/health")
+    assert response.status_code == 200
+
+
+def test_health_response_structure():
+    response = client.get("/health")
+    data = response.json()
+    assert "status" in data
+    assert data["status"] == "healthy"
+    assert "model" in data
+
+
+def test_predict_invalid_extension():
+    response = client.post("/predict", files={"file": ("test.gif", b"data", "image/gif")})
+    assert response.status_code == 400
+
+
+def test_predict_file_too_large():
+    big_file = b"x" * (11 * 1024 * 1024)  # 11MB
+    response = client.post("/predict", files={"file": ("test.jpg", big_file, "image/jpeg")})
+    assert response.status_code == 400
