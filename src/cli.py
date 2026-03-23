@@ -96,7 +96,19 @@ def promote(version, stage):
         version=version,
         stage=stage,
     )
-    click.echo(f"Modelo versión {version} → {stage}")
+    click.echo(f"Model version {version} → {stage}")
+
+
+@smoke.command()
+def export():
+    """Export model to ONNX format."""
+    from ultralytics import YOLO
+
+    from src.utils.config import config
+
+    model = YOLO(config["training"]["best_model"])
+    model.export(format="onnx")
+    click.echo("ONNX model exported")
 
 
 if __name__ == "__main__":
