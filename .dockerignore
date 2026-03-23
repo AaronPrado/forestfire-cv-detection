@@ -1,0 +1,29 @@
+# Data
+data/
+runs/
+mlruns/
+
+# Models
+*.pt
+*.onnx
+
+# Environment
+.env
+.venv/
+venv/
+
+# Git
+.git/
+.github/
+.ruff_cache/
+.pytest_cache/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Tests
+tests/
+
+# Docs
+README.md
