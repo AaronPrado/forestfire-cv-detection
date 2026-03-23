@@ -15,6 +15,7 @@ data:
     test: 0.1
 
   image_size: 640
+  data_yaml: "data/processed/data.yaml"
 
 aws:
   bucket: "wildfire-smoke-detection"

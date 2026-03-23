@@ -1,4 +1,5 @@
 import mlflow
+import torch
 from ultralytics import YOLO
 
 from src.utils.config import config
@@ -19,12 +20,12 @@ def train(epochs_override: int | None = None, batch_size_override: int | None = 
 
         # Entrenamiento
         results = model.train(
-            data="data/processed/data.yaml",  # YAML del dataset
+            data=config["training"]["data_yaml"],
             epochs=epochs_override or config["training"]["epochs"],
             batch=batch_size_override or config["training"]["batch_size"],
             imgsz=config["training"]["imgsz"],
             patience=config["training"]["patience"],
-            device=0,
+            device=0 if torch.cuda.is_available() else "cpu",
             project="runs/train",
             name="smoke-v",
             workers=0,
