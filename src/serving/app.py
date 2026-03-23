@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 import cv2
@@ -7,8 +8,17 @@ from ultralytics import YOLO
 
 from src.utils.config import config
 
-app = FastAPI(title="Wildfire Smoke Detection API")
-model = YOLO(config["training"]["best_model"])
+model = None
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global model
+    model = YOLO(config["training"]["best_model"])
+    yield
+
+
+app = FastAPI(title="Wildfire Smoke Detection API", lifespan=lifespan)
 
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png"}
 MAX_SIZE = 10 * 1024 * 1024  # 10MB
