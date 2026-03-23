@@ -38,7 +38,7 @@ dev = [
 ]
 
 [project.scripts]
-smoke = "src.cli:cli"
+smoke = "src.cli:smoke"
 
 [tool.ruff]
 target-version = "py311"
@@ -54,3 +54,6 @@ addopts = "-v --tb=short"
 [build-system]
 requires = ["setuptools>=68.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]

@@ -4,7 +4,7 @@ from ultralytics import YOLO
 from src.utils.config import config
 
 
-def train():
+def train(epochs_override: int | None = None, batch_size_override: int | None = None):
     mlflow.set_tracking_uri(config["mlflow"]["tracking_uri"])
     mlflow.set_experiment(config["mlflow"]["experiment_name"])
 
@@ -20,8 +20,8 @@ def train():
         # Entrenamiento
         results = model.train(
             data="data/processed/data.yaml",  # YAML del dataset
-            epochs=config["training"]["epochs"],
-            batch=config["training"]["batch_size"],
+            epochs=epochs_override or config["training"]["epochs"],
+            batch=batch_size_override or config["training"]["batch_size"],
             imgsz=config["training"]["imgsz"],
             patience=config["training"]["patience"],
             device=0,
