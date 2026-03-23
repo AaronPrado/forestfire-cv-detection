@@ -3,18 +3,22 @@ from pathlib import Path
 import cv2
 import yaml
 
+from src.utils.logging import get_logger
+
+logger = get_logger(__name__)
+
 
 def validate_image(image_path, label_path):
 
     # Verificar que la imagen se puede abrir
     img = cv2.imread(str(image_path))
     if img is None:
-        print(f"Imagen corrupta o no existe: {image_path}")
+        logger.warning("Imagen corrupta o no existe: %s", image_path)
         return False
 
     # Verificar que el label existe
     if not label_path.exists():
-        print(f"Label no encontrado: {label_path}")
+        logger.warning("Label no encontrado: %s", label_path)
         return False
 
     # Verificar el formato del label
@@ -25,23 +29,27 @@ def validate_image(image_path, label_path):
         parts = line.strip().split()
 
         if len(parts) != 5:
-            print(f"Label {label_path} línea {i}: esperaba 5 valores, tiene {len(parts)}")
+            logger.warning(
+                "Label %s línea %d: esperaba 5 valores, tiene %d", label_path, i, len(parts)
+            )
             return False
 
         try:
             cls = int(parts[0])
             coords = [float(p) for p in parts[1:]]
         except ValueError:
-            print(f"Label {label_path} línea {i}: valores no numéricos")
+            logger.warning("Label %s línea %d: valores no numéricos", label_path, i)
             return False
 
         if cls < 0:
-            print(f"Label {label_path} línea {i}: clase negativa ({cls})")
+            logger.warning("Label %s línea %d: clase negativa (%d)", label_path, i, cls)
             return False
 
         for j, coord in enumerate(coords):
             if coord < 0.0 or coord > 1.0:
-                print(f"Label {label_path} línea {i}: coordenada {j} fuera de rango ({coord})")
+                logger.warning(
+                    "Label %s línea %d: coordenada %d fuera de rango (%f)", label_path, i, j, coord
+                )
                 return False
 
     return True
@@ -65,10 +73,12 @@ def validate_dataset(dataset_path):
                 else:
                     invalid_count += 1
 
-    print("\nResultado de validación:")
-    print(f"  Válidas: {valid_count}")
-    print(f"  Inválidas: {invalid_count}")
-    print(f"  Total: {valid_count + invalid_count}")
+    logger.info(
+        "Resultado de validación — Válidas: %d | Inválidas: %d | Total: %d",
+        valid_count,
+        invalid_count,
+        valid_count + invalid_count,
+    )
 
     return invalid_count == 0
 

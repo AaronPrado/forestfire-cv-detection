@@ -3,6 +3,9 @@ import torch
 from ultralytics import YOLO
 
 from src.utils.config import config
+from src.utils.logging import get_logger
+
+logger = get_logger(__name__)
 
 
 def train(epochs_override: int | None = None, batch_size_override: int | None = None):
@@ -44,7 +47,7 @@ def train(epochs_override: int | None = None, batch_size_override: int | None = 
         # Model Registry
         model_uri = f"runs:/{run.info.run_id}/best.pt"
         mv = mlflow.register_model(model_uri, "wildfire-smoke-yolov8s")
-        print(f"Modelo registrado: versión {mv.version}")
+        logger.info("Modelo registrado: versión %s", mv.version)
 
 
 if __name__ == "__main__":

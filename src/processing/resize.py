@@ -4,6 +4,10 @@ from pathlib import Path
 import cv2
 import yaml
 
+from src.utils.logging import get_logger
+
+logger = get_logger(__name__)
+
 
 def resize_image(image_path, output_path, size):
     """Redimensiona una imagen y copia el label."""
@@ -40,7 +44,7 @@ def resize_dataset(raw_dir, processed_dir, size):
 
                 img_count += 1
 
-    print(f"Imágenes redimensionadas: {img_count}")
+    logger.info("Imágenes redimensionadas: %d", img_count)
 
 
 if __name__ == "__main__":

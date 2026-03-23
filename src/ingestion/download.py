@@ -4,7 +4,10 @@ import pandas as pd
 from roboflow import Roboflow
 
 from src.utils.config import ROBOFLOW_API_KEY, config
+from src.utils.logging import get_logger
 from src.utils.s3 import count_s3_objects, upload_to_s3
+
+logger = get_logger(__name__)
 
 
 def download_dataset():
@@ -12,17 +15,17 @@ def download_dataset():
     raw_dir = Path(config["data"]["raw_dir"])
 
     if (raw_dir / "train" / "images").exists():
-        print("Dataset ya existe localmente. Saltando descarga.")
+        logger.info("Dataset ya existe localmente. Saltando descarga.")
         return
 
-    print("Descargando dataset de Roboflow...")
+    logger.info("Descargando dataset de Roboflow...")
     rf = Roboflow(api_key=ROBOFLOW_API_KEY)
     project = rf.workspace(config["data"]["roboflow_workspace"]).project(
         config["data"]["roboflow_project"]
     )
     version = project.version(config["data"]["roboflow_version"])
     version.download(model_format=config["data"]["format"], location=str(raw_dir))
-    print("Dataset descargado.")
+    logger.info("Dataset descargado.")
 
 
 def upload_raw_to_s3():
@@ -32,12 +35,12 @@ def upload_raw_to_s3():
 
     count = count_s3_objects(bucket, prefix)
     if count > 0:
-        print(f"S3 ya tiene {count} archivos en {prefix}. Saltando subida.")
+        logger.info("S3 ya tiene %d archivos en %s. Saltando subida.", count, prefix)
         return
 
-    print("Subiendo dataset a S3...")
+    logger.info("Subiendo dataset a S3...")
     total = upload_to_s3(config["data"]["raw_dir"], bucket, prefix)
-    print(f"Archivos subidos: {total}")
+    logger.info("Archivos subidos: %d", total)
 
 
 def generate_metadata():
@@ -45,10 +48,10 @@ def generate_metadata():
     metadata_path = Path("data/metadata.parquet")
 
     if metadata_path.exists():
-        print("Metadatos ya existen. Saltando generación.")
+        logger.info("Metadatos ya existen. Saltando generación.")
         return
 
-    print("Generando metadatos...")
+    logger.info("Generando metadatos...")
     local_path = Path(config["data"]["raw_dir"])
     bucket = config["aws"]["bucket"]
     prefix = config["aws"]["raw_prefix"]
@@ -74,10 +77,9 @@ def generate_metadata():
 
     df = pd.DataFrame(records)
     df.to_parquet(str(metadata_path), index=False)
-    print(f"Metadatos generados: {len(df)} imágenes")
-    print("\nResumen por split:")
-    print(df["split"].value_counts())
-    print(f"\nImágenes con label: {df['has_label'].sum()}/{len(df)}")
+    logger.info("Metadatos generados: %d imágenes", len(df))
+    logger.info("Resumen por split:\n%s", df["split"].value_counts().to_string())
+    logger.info("Imágenes con label: %d/%d", df["has_label"].sum(), len(df))
 
 
 if __name__ == "__main__":
