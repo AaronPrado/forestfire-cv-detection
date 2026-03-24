@@ -41,4 +41,8 @@ clean:
 		find . -type d -name .pytest_cache -exec rm -rf {} +
 		find . -type d -name .ruff_cache -exec rm -rf {} +
 
+clean-data:
+		rm -rf data/raw/* data/processed/* data/metadata.parquet
+
+
 all: format lint test

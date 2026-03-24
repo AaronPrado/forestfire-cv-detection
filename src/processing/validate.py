@@ -21,6 +21,10 @@ def validate_image(image_path, label_path):
         logger.warning("Label no encontrado: %s", label_path)
         return False
 
+    # Verificar que el label no está vacío
+    if label_path.stat().st_size == 0:
+        return True
+
     # Verificar el formato del label
     with open(label_path) as f:
         lines = f.readlines()

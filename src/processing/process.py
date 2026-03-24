@@ -1,5 +1,7 @@
 import sys
 
+import yaml
+
 from src.processing.resize import resize_dataset
 from src.processing.validate import validate_dataset
 from src.utils.config import config
@@ -7,6 +9,20 @@ from src.utils.logging import get_logger
 from src.utils.s3 import count_s3_objects, upload_to_s3
 
 logger = get_logger(__name__)
+
+
+def generate_data_yaml():
+    """Genera el archivo data.yaml para YOLOv8."""
+    data_yaml = {
+        "path": config["data"]["processed_dir"],
+        "train": "train/images",
+        "val": "val/images",
+        "test": "test/images",
+        "nc": len(config["data"]["classes"]),
+        "names": config["data"]["classes"],
+    }
+    with open(config["data"]["data_yaml"], "w") as f:
+        yaml.dump(data_yaml, f)
 
 
 def run_processing():
@@ -37,6 +53,8 @@ def run_processing():
 
     total = upload_to_s3(config["data"]["processed_dir"], bucket, prefix)
     logger.info("Archivos subidos: %d", total)
+
+    generate_data_yaml()
 
 
 if __name__ == "__main__":

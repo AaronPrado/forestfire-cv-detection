@@ -53,3 +53,9 @@ def test_validate_image_negative_class(sample_image: Path, tmp_path: Path):
     label = tmp_path / "negclass.txt"
     label.write_text("-1 0.5 0.5 0.3 0.4\n")
     assert validate_image(sample_image, label) is False
+
+
+def test_validate_image_empty_label(sample_image: Path, tmp_path: Path):
+    label = tmp_path / "empty.txt"
+    label.write_text("")  # Label vacío = imagen negativa (clase null)
+    assert validate_image(sample_image, label) is True
