@@ -54,7 +54,10 @@ def run_processing():
     total = upload_to_s3(config["data"]["processed_dir"], bucket, prefix)
     logger.info("Archivos subidos: %d", total)
 
+    logger.info("=== Paso 4: Generar data.yaml ===")
     generate_data_yaml()
+    logger.info("data.yaml generado exitosamente.")
+    return
 
 
 if __name__ == "__main__":
