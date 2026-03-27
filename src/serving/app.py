@@ -18,7 +18,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="Wildfire Smoke Detection API", lifespan=lifespan)
+app = FastAPI(title="Wildfire Fire & Smoke Detection API", lifespan=lifespan)
 
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png"}
 MAX_SIZE = 10 * 1024 * 1024  # 10MB

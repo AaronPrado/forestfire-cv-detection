@@ -1,5 +1,7 @@
 import click
 
+from src.utils.config import config
+
 
 @click.group()
 @click.version_option(version="1.0.0")
@@ -52,8 +54,6 @@ def predict(image_path):
     """Run inference on a single image."""
     from ultralytics import YOLO
 
-    from src.utils.config import config
-
     model = YOLO(config["training"]["best_model"])
     results = model.predict(image_path, conf=config["serving"]["confidence_threshold"], save=True)
     for box in results[0].boxes:
@@ -92,7 +92,7 @@ def promote(version, stage):
     mlflow.set_tracking_uri(config["mlflow"]["tracking_uri"])
     client = MlflowClient()
     client.transition_model_version_stage(
-        name="wildfire-smoke-yolov8s",
+        name=config["mlflow"]["model_name"],
         version=version,
         stage=stage,
     )

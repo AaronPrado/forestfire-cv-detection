@@ -14,7 +14,7 @@ def train(epochs_override: int | None = None, batch_size_override: int | None = 
 
     model = YOLO(config["training"]["model"])
 
-    with mlflow.start_run(run_name="wildfire-smoke-detection-initial") as run:
+    with mlflow.start_run(run_name=config["mlflow"]["model_name"]) as run:
         # Registrar parámetros
         mlflow.log_param("model", config["training"]["model"])
         mlflow.log_param("epochs", config["training"]["epochs"])
@@ -23,14 +23,14 @@ def train(epochs_override: int | None = None, batch_size_override: int | None = 
 
         # Entrenamiento
         results = model.train(
-            data=config["training"]["data_yaml"],
+            data=config["data"]["data_yaml"],
             epochs=epochs_override or config["training"]["epochs"],
             batch=batch_size_override or config["training"]["batch_size"],
             imgsz=config["training"]["imgsz"],
             patience=config["training"]["patience"],
             device=0 if torch.cuda.is_available() else "cpu",
             project="runs/train",
-            name="smoke-v",
+            name="fire-smoke-v",
             workers=0,
         )
 
@@ -45,8 +45,8 @@ def train(epochs_override: int | None = None, batch_size_override: int | None = 
         mlflow.log_artifact(str(results.save_dir / "weights" / "best.pt"))
 
         # Model Registry
-        model_uri = f"runs:/{run.info.run_id}/best.pt"
-        mv = mlflow.register_model(model_uri, "wildfire-smoke-yolov8s")
+        artifact_uri = f"{run.info.artifact_uri}/best.pt"
+        mv = mlflow.register_model(artifact_uri, config["mlflow"]["model_name"])
         logger.info("Modelo registrado: versión %s", mv.version)
 
 

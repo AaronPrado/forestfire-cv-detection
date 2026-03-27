@@ -24,7 +24,7 @@ def download_dataset():
         config["data"]["roboflow_project"]
     )
     version = project.version(config["data"]["roboflow_version"])
-    version.download(model_format=config["data"]["format"], location=str(raw_dir))
+    version.download(model_format=config["data"]["format"], location=str(raw_dir), overwrite=True)
     logger.info("Dataset descargado.")
 
 

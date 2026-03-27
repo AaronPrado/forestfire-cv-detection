@@ -17,8 +17,8 @@ demo = gr.Interface(
     fn=predict,
     inputs=gr.Image(type="pil"),
     outputs=[gr.Image(type="numpy"), gr.Text()],
-    title="Wildfire Smoke Detection",
-    description="Sube una imagen para detectar humo de incendios forestales",
+    title="Wildfire Fire & Smoke Detection",
+    description="Sube una imagen para detectar fuego y humo de incendios forestales",
 )
 
 demo.launch()

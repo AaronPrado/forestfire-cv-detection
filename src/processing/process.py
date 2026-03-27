@@ -16,7 +16,7 @@ def generate_data_yaml():
     data_yaml = {
         "path": config["data"]["processed_dir"],
         "train": "train/images",
-        "val": "val/images",
+        "val": "valid/images",
         "test": "test/images",
         "nc": len(config["data"]["classes"]),
         "names": config["data"]["classes"],
@@ -49,15 +49,13 @@ def run_processing():
     count = count_s3_objects(bucket, prefix)
     if count > 0:
         logger.info("S3 ya tiene %d archivos en %s. Saltando subida.", count, prefix)
-        return
-
-    total = upload_to_s3(config["data"]["processed_dir"], bucket, prefix)
-    logger.info("Archivos subidos: %d", total)
+    else:
+        total = upload_to_s3(config["data"]["processed_dir"], bucket, prefix)
+        logger.info("Archivos subidos: %d", total)
 
     logger.info("=== Paso 4: Generar data.yaml ===")
     generate_data_yaml()
     logger.info("data.yaml generado exitosamente.")
-    return
 
 
 if __name__ == "__main__":
