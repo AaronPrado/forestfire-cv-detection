@@ -20,6 +20,7 @@ def train(epochs_override: int | None = None, batch_size_override: int | None = 
         mlflow.log_param("epochs", config["training"]["epochs"])
         mlflow.log_param("batch_size", config["training"]["batch_size"])
         mlflow.log_param("imgsz", config["training"]["imgsz"])
+        mlflow.log_param("cos_lr", True)
 
         # Entrenamiento
         results = model.train(
@@ -32,6 +33,7 @@ def train(epochs_override: int | None = None, batch_size_override: int | None = 
             project="runs/train",
             name="fire-smoke-v",
             workers=0,
+            cos_lr=True,
         )
 
         # Registrar métricas

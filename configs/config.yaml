@@ -25,7 +25,7 @@ aws:
   processed_prefix: "v2/data/processed"
 
 training:
-  # YOLOv8s: equilibrio entre capacidad e inferencia rápida
+  # YOLOv8s: Obtuvimos mejores resultados que con la m, debido al cuello de botella del dataset
   model: "yolov8s.pt"
   best_model: "models/best.pt"
   epochs: 200
